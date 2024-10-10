@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     # 'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'apps.shipper.apps.ShipperConfig'
+    'apps.shipper.apps.ShipperConfig',
+    'apps.repository.apps.RepositoryConfig'
 
 ]
 
@@ -102,15 +103,16 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False  # 写入数据库你的时间是当前时间
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
@@ -120,12 +122,24 @@ STATIC_URL = '/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-from rest_framework.request import Request
+
 APPEND_SLASH = False
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://114.55.132.113:6379/2",  # 安装redis的主机的 IP 和 端口
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {
+                "max_connections": 1000,
+                "encoding": 'utf-8'
+            },
+            "PASSWORD": "19970917wjwhl"  # redis密码
+        }
+    }
+}
 REST_FRAMEWORK = {
     "UNAUTHENTICATED_USER": None,
     "UNAUTHENTICATED_TOKEN": None
 }
-
-
