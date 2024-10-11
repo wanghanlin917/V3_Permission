@@ -1,11 +1,13 @@
 from rest_framework import serializers
+# from rest_framework.mixins import RetrieveModelMixin,ListModelMixin
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from apps.repository import models
 from utils.ext.auth import JwtAuthentication
-from utils.ext.mixins import RetrieveModelMixin
+from utils.ext.mixins import ListModelMixin,RetrieveModelMixin
+from utils.ext.filter import MineFilterBackend
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
@@ -21,11 +23,16 @@ class UserInfoSerializer(serializers.ModelSerializer):
 # class UserInfoView(GenericViewSet):
 #     def retrieve(self, request):
 #         return Response({'code': 200, 'msg': 'hahah'})
-
 class UserInfoView(RetrieveModelMixin, GenericViewSet):
     authentication_classes = [JwtAuthentication, ]
+    filter_backends = [MineFilterBackend]
     queryset = models.Company.objects.all()
     serializer_class = UserInfoSerializer
+
+# class UserInfoView(RetrieveModelMixin, GenericViewSet):
+#     authentication_classes = [JwtAuthentication, ]
+#     queryset = models.Company.objects.all()
+#     serializer_class = UserInfoSerializer
 
     # def get(self, request):
     # print(request.user["username"])

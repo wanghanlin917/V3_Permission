@@ -2,6 +2,9 @@
 from django.utils.deprecation import MiddlewareMixin
 
 class AuthMiddleware(MiddlewareMixin):
+    # def process_request(self, request):
+    #     print(request)
+    #     return request
     def process_respon(self, request,response):
         #任意网址
         response["Access-Control-Allow-Origin"] = "*"

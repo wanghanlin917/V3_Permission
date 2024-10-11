@@ -31,6 +31,3 @@ def parse_payload(token):
         error = '非法的token'
     return False, error
     # return True,1111
-
-
-
