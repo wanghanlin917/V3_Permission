@@ -20,10 +20,10 @@ class ListModelMixin:
 
 class RetrieveModelMixin:
     def retrieve(self, request, *args, **kwargs):
-        print(request.data)
         try:
             instance = self.get_object()
             serializer = self.get_serializer(instance)
+            print(serializer.data)
             return Response({"code": 0, "message": "成功", "data": serializer.data})
             # return Response(
             #     {"code": 0, "message": "成功",
