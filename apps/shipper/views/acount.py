@@ -20,7 +20,7 @@ class LoginView(APIView):
             print(ser.errors)
             return Response({"code": -1, "message": "登录失败"})
         # 2.数据库合法性校验 print(ser.data)
-        # print(ser.data)
+        # print("login",ser.data)
         instance = models.Company.objects.filter(**ser.data).first()
         # 2.1登录失败
         if not instance:

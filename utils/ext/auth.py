@@ -15,7 +15,7 @@ class JwtAuthentication(BaseAuthentication):
         # print("11111")
         # print(request.GET)
         # 2.token校验
-        print("exit")
+        # print("exit")
         status, info_or_error = parse_payload(authorization)
         # print(status, info_or_error)
         # 校验失败，返回失败消息
