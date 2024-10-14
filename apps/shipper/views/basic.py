@@ -33,12 +33,13 @@ class NameSerializer(serializers.ModelSerializer):
 class MobileSerializer(serializers.ModelSerializer):
     old_mobile = serializers.CharField(write_only=True)
     # source可以解决前后端的字段不通
-    new_mobile = serializers.CharField(write_only=True,source="mobile",validators=[RegexValidator(r'\d{11}', message="手机格式错误")])
+    new_mobile = serializers.CharField(write_only=True, source="mobile",
+                                       validators=[RegexValidator(r'\d{11}', message="手机格式错误")])
     t_mobile = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = models.Company
-        fields = ['old_mobile', 't_mobile', 'mobile','new_mobile']
+        fields = ['old_mobile', 't_mobile', 'mobile', 'new_mobile']
         extra_kwargs = {
             'old_mobile': {'validators': [RegexValidator(r'\d{11}', message="手机格式错误")]},
         }
@@ -52,7 +53,6 @@ class MobileSerializer(serializers.ModelSerializer):
         return value
 
     def get_t_mobile(self, value):
-
         return value.mobile[0:3] + "****" + value.mobile[-4:]
 
 
