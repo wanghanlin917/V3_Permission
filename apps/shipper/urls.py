@@ -11,7 +11,7 @@ urlpatterns = [
     path('users/login', acount.LoginView.as_view(), name='LoginView'),
     path('users/sms', acount.SendSmsView.as_view(), name='SendSmsView'),
     path('users/mobilelogin', acount.SmsLoginView.as_view(), name='SmsLoginView'),
-    # path('', include(router.urls)),
+    path('', include(router.urls)),
     path('users/register', acount.RegisterView.as_view(), name='RegisterView')
 ]
 urlpatterns += router.urls
