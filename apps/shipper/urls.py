@@ -5,8 +5,7 @@ from rest_framework import routers
 
 router = routers.SimpleRouter(trailing_slash=False)
 router.register(r'users/info', basic.UserInfoView, basename="UserInfoView")
-router.register(r'auth', auth.AuthView)
-
+router.register(r'auth', auth.AuthView, basename="AuthView")
 urlpatterns = [
     path('users/login', acount.LoginView.as_view(), name='LoginView'),
     path('users/sms', acount.SendSmsView.as_view(), name='SendSmsView'),

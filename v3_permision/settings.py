@@ -149,4 +149,4 @@ import os
 # 目录
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 # 访问的前缀 http://127.0.0.1:8000/media
-MEDIA_URL = '/media'
+MEDIA_URL = '/media/'

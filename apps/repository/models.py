@@ -20,3 +20,6 @@ class CompanyAuth(models.Model):
     licence_path = models.CharField(verbose_name="营业执照", max_length=64)
     legal_person = models.CharField(verbose_name="法人", max_length=32)
     legal_identity = models.CharField(verbose_name="法人身份证", max_length=64)
+    legal_identity_front = models.CharField(verbose_name="身份证-人头", max_length=128)  # 文件路径
+    legal_identity_back = models.CharField(verbose_name="身份证-国徽", max_length=128)  # 文件路径
+    remark = models.TextField(verbose_name="审核备注", null=True, blank=True)

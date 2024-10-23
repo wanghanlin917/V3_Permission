@@ -39,7 +39,7 @@ class JwtAuthentication(BaseAuthentication):
 class JwtParamAuthentication(BaseAuthentication):
     def authenticate(self, request):
         # 1.读取请求头的token
-        authorization = request.query_params.get('Authorization')
+        authorization = request.query_params.get('token')
         # 2.token验证
         status, info_or_error = parse_payload(authorization)
         # 3.校验失败，继续往后走
