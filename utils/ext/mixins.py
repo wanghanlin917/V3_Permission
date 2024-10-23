@@ -41,7 +41,6 @@ class UpdateModelMixin:
     """
     Update a model instance.
     """
-
     def update(self, request, *args, **kwargs):
         try:
             partial = kwargs.pop('partial', False)
