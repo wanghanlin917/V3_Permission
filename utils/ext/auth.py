@@ -1,7 +1,7 @@
 from rest_framework import exceptions
 from rest_framework.authentication import BaseAuthentication
 from utils.jwt_auth import parse_payload
-from utils.jwt_auth import create_token,parse_payload
+from utils.jwt_auth import create_token, parse_payload
 
 
 class JwtAuthentication(BaseAuthentication):
@@ -27,6 +27,7 @@ class JwtAuthentication(BaseAuthentication):
         # 4.校验成功，继续向后 request.user, request.auth
         return (info_or_error, authorization)
         # return (1,2)
+
     def authenticate_header(self, request):
         """
         Return a string to be used as the value of the `WWW-Authenticate`
@@ -56,13 +57,10 @@ class JwtParamAuthentication(BaseAuthentication):
         """
         return 'API realm="API"'
 
-    class DenyAuthentication(BaseAuthentication):
-        def authenticate(self, request):
-            raise exceptions.AuthenticationFailed({'code': 8888, 'msg': "认证失败"})
 
-        def authenticate_header(self, request):
-            return 'API realm="API"'
+class DenyAuthentication(BaseAuthentication):
+    def authenticate(self, request):
+        raise exceptions.AuthenticationFailed({'code': 8888, 'msg': "认证失败"})
 
-
-
-
+    def authenticate_header(self, request):
+        return 'API realm="API"'
