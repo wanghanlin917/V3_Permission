@@ -3,7 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from utils.ext.mixins import RetrieveModelMixin, UpdateModelMixin
-from utils.ext.auth import JwtAuthentication,JwtParamAuthentication,DenyAuthentication
+from utils.ext.auth import JwtAuthentication, JwtParamAuthentication, DenyAuthentication
 from apps.repository import models
 
 
@@ -35,13 +35,13 @@ class AuthModelSerializers(serializers.ModelSerializer):
 
 
 class AuthView(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
-    authentication_classes = [JwtAuthentication,JwtParamAuthentication,DenyAuthentication]
+    authentication_classes = [JwtAuthentication, JwtParamAuthentication, DenyAuthentication]
     queryset = models.CompanyAuth.objects.all()
     serializer_class = AuthModelSerializers
 
-    @action(detail=False, methods=['post'],url_path="upload")
-    def upload(self,request):
-        upload_obj = request.FILES('file')
-        print(upload_obj.name)
-        return Response({"code":0,"message":"success"})
-
+    @action(detail=False, methods=['post'], url_path="upload")
+    def upload(self, request):
+        print(request.data)
+        # upload_obj = request.FILES('file')
+        # print(upload_obj.name)
+        return Response({"code": 0, "message": "success", "data": {"url": "xxxxx", "abs_url": "bdfig"}})
