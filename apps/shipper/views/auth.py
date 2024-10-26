@@ -41,7 +41,18 @@ class AuthView(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
 
     @action(detail=False, methods=['post'], url_path="upload")
     def upload(self, request):
-        print(request.data)
+        print(request)
+        print(request.FILES.get('file'))
         # upload_obj = request.FILES('file')
         # print(upload_obj.name)
-        return Response({"code": 0, "message": "success", "data": {"url": "xxxxx", "abs_url": "bdfig"}})
+        upload_object = request.FILES.get('file')
+        if upload_object.size > 10 * 1024 * 1024:
+            return Response({
+                "code": -1,
+                "msg": "文件太大"
+            })
+        
+        print("name",upload_object.name)
+        print("xxxx", upload_object.size)
+        return Response({"code": 0, "message": "success",
+                         "data": {"url": "xxxxx", "abs_url": "http://127.0.0.1:8000/media/woman.png"}})
