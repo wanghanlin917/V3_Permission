@@ -1,9 +1,10 @@
 from rest_framework import serializers
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin,CreateModelMixin,UpdateModelMixin,DestroyModelMixin
+# from rest_framework import viewsets
+# from rest_framework.mixins import ListModelMixin, RetrieveModelMixin,CreateModelMixin,UpdateModelMixin,DestroyModelMixin
 from rest_framework.viewsets import GenericViewSet
-from utils.ext.mixins import RetrieveModelMixin, UpdateModelMixin
+from utils.ext.mixins import RetrieveModelMixin, CreateUpdateModelMixin
 from utils.ext.auth import JwtAuthentication, JwtParamAuthentication, DenyAuthentication
 from apps.repository import models
 from datetime import datetime
@@ -71,7 +72,7 @@ class AuthModelSerializers(serializers.ModelSerializer):
         return self.context['request'].build_absolute_uri(obj.legal_identity_back_url)
 
 
-class AuthView(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
+class AuthView(RetrieveModelMixin, CreateUpdateModelMixin, GenericViewSet):
     authentication_classes = [JwtAuthentication, JwtParamAuthentication, DenyAuthentication]
     queryset = models.CompanyAuth.objects.all()
     serializer_class = AuthModelSerializers
@@ -105,4 +106,7 @@ class AuthView(RetrieveModelMixin, UpdateModelMixin, GenericViewSet):
                          "data": {"url": local_url, "abs_url": abs_url}})
 
     def get_instance(self):
-        user_id = e
+        user_id = self.request.user['user_id']
+        return models.CompanyAuth.objects.filter(company_id=user_id).first()
+    def perform_create(self):
+        user_id = self.request.user['user_id']

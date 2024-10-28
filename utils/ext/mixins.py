@@ -41,6 +41,7 @@ class UpdateModelMixin:
     """
     Update a model instance.
     """
+
     def update(self, request, *args, **kwargs):
         try:
             partial = kwargs.pop('partial', False)
@@ -53,7 +54,7 @@ class UpdateModelMixin:
                 return Response({"code": -1, "message": serializer.errors[key][0]})
             # print("新的",serializer.data)
             self.perform_update(serializer)
-            return Response({"code": 0, "message": "请求成功","data":serializer.data})
+            return Response({"code": 0, "message": "请求成功", "data": serializer.data})
 
         except Exception as e:
             return Response({"code": -1, "message": "请求失败"})
@@ -64,3 +65,30 @@ class UpdateModelMixin:
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
+
+
+class CreateUpdateModelMixin:
+    def get_instance(self):
+        """ 这是一个钩子，返回对象，则表示更新；返回None则表示新建"""
+        pass
+
+    def create(self, request, *args, **kwargs):
+        instance = self.get_instance()
+        if instance:
+            serializer = self.get_serializer(instance, data=request.data, partial=True)
+            if not serializer.is_valid():
+                return Response({"code": -1, "message": serializer.errors})
+            self.perform_update(serializer)
+            return Response({"code": 0, "message": "提交成功", "data": serializer.data})
+        else:
+            serializer = self.get_serializer(data=request.data)
+            if not serializer.is_valid():
+                return Response({"code": -1, "message": serializer.errors})
+            self.perform_create(serializer)
+            return Response({"code": 0, "message": "提交成功", "data": serializer.data})
+
+        def perform_create(self, serializer):
+            serializer.save()
+
+        def perform_update(self, serializer):
+            serializer.save()
