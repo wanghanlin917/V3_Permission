@@ -22,6 +22,11 @@ class LoginView(APIView):
         # 2.数据库合法性校验 print(ser.data)
         # print("login",ser.data)
         instance = models.Company.objects.filter(**ser.data).first()
+        if instance.auth_type == 1:
+            auth_id = 0
+        else:
+            auth_id = instance.companyauth.id
+
         # 2.1登录失败
         if not instance:
             return Response({"code": -2, "message": "用户名或密码错误"})
@@ -29,7 +34,8 @@ class LoginView(APIView):
         # print(token)
         # 2.2登录成功
         return Response(
-            {"code": 0, "message": "成功", "data": {"token": token, "username": instance.username, "id": instance.id}})
+            {"code": 0, "message": "成功",
+             "data": {"token": token, "username": instance.username, "id": instance.id, "auth_id": auth_id}})
 
 
 class SendSmsView(APIView):
@@ -71,7 +77,11 @@ class SmsLoginView(APIView):
             # print(ser.validated_data)
             # 校验成功
             instance = models.Company.objects.filter(mobile=ser.validated_data["mobile"]).first()
-            token = create_token({'user_id': instance.id, 'username': instance.username})
+            if instance.auth_type == 1:
+                auth_id = 0
+            else:
+                auth_id = instance.companyauth.id
+            token = create_token({'user_id': instance.id, 'username': instance.username, "auth_id": auth_id})
             return Response({
                 "code": 0,
                 "message": "成功",
