@@ -26,7 +26,7 @@ class LoginView(APIView):
             auth_id = 0
         else:
             auth_id = instance.companyauth.id
-
+        print("auth_id",auth_id)
         # 2.1登录失败
         if not instance:
             return Response({"code": -2, "message": "用户名或密码错误"})
@@ -85,7 +85,7 @@ class SmsLoginView(APIView):
             return Response({
                 "code": 0,
                 "message": "成功",
-                "data": {"token": token, "username": instance.username}
+                "data": {"token": token, "username": instance.username, "auth_id": auth_id}
             })
         except Exception as e:
             print("--->", e)

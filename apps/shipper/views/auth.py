@@ -47,7 +47,7 @@ def baidu_ai(bytes_body):
 
 class AuthModelSerializers(serializers.ModelSerializer):
     # auth_type_text = serializers.CharField(source="company.auth_type_text",read_only=True)
-    auth_type_class = serializers.SerializerMethodField(read_only=True)
+    # auth_type_class = serializers.SerializerMethodField(read_only=True)
     licence_path_url = serializers.SerializerMethodField()
     legal_identity_front_url = serializers.SerializerMethodField()
     legal_identity_back_url = serializers.SerializerMethodField()
@@ -59,17 +59,17 @@ class AuthModelSerializers(serializers.ModelSerializer):
             'remark': {"read_only": True}
         }
 
-    def get_auth_type_class(self, obj):
-        return models.Company.auth_type_class_map[obj.company.auth_type]
+    # def get_auth_type_class(self, obj):
+    #     return models.Company.auth_type_class_map[obj.company.auth_type]
 
     def get_licence_path_url(self, obj):
         return self.context['request'].build_absolute_uri(obj.licence_path)
 
     def get_legal_identity_front_url(self, obj):
-        return self.context['request'].build_absolute_uri(obj.legal_identity_front_url)
+        return self.context['request'].build_absolute_uri(obj.legal_identity_front)
 
     def get_legal_identity_back_url(self, obj):
-        return self.context['request'].build_absolute_uri(obj.legal_identity_back_url)
+        return self.context['request'].build_absolute_uri(obj.legal_identity_back)
 
 
 class AuthView(RetrieveModelMixin, CreateUpdateModelMixin, GenericViewSet):
@@ -99,9 +99,9 @@ class AuthView(RetrieveModelMixin, CreateUpdateModelMixin, GenericViewSet):
             upload_object.seek(0)
             baidu_ai(upload_object.read())
         # print("type", img_type)
-        # print("upload_url", upload_url)
-        # print("local_url", local_url)
-        # print("abs_url", abs_url)
+        print("upload_url", upload_url)
+        print("local_url", local_url)
+        print("abs_url", abs_url)
         return Response({"code": 0, "message": "success",
                          "data": {"url": local_url, "abs_url": abs_url}})
 

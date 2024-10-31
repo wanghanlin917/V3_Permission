@@ -14,7 +14,7 @@ class Company(models.Model):
 
 class CompanyAuth(models.Model):
     """供应商认证"""
-    company = models.ForeignKey(verbose_name="公司", to="Company", on_delete=models.CASCADE)
+    company = models.OneToOneField(verbose_name="公司", to="Company", on_delete=models.CASCADE)
     title = models.CharField(verbose_name="公司全称", max_length=64)
     unique_id = models.CharField(verbose_name="信用代码", max_length=64)
     licence_path = models.CharField(verbose_name="营业执照", max_length=64)
