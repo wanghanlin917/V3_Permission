@@ -41,8 +41,9 @@ def baidu_ai(bytes_body):
     headers = {'content-type': 'application/x-www-form-urlencoded'}
     res = requests.post(request_url, data=params, headers=headers)
     res_dict = res.json()
-    for k, v in res_dict["words_result"].items():
-        print(k, v)
+    # for k, v in res_dict["words_result"].items():
+    #     print(k, v)
+    return res_dict["words_result"]
 
 
 class AuthModelSerializers(serializers.ModelSerializer):
@@ -97,7 +98,12 @@ class AuthView(RetrieveModelMixin, CreateUpdateModelMixin, GenericViewSet):
         img_type = request.data.get("type")
         if img_type == "front":
             upload_object.seek(0)
-            baidu_ai(upload_object.read())
+            res = baidu_ai(upload_object.read())
+            print(res["姓名"]["words"])
+            print(res["公民身份号码"]["words"])
+            return Response({"code": 0, "message": "success",
+                             "data": {"url": local_url, "abs_url": abs_url, "name": res["姓名"]["words"],
+                                      "cardId": res["公民身份号码"]["words"]}})
         # print("type", img_type)
         print("upload_url", upload_url)
         print("local_url", local_url)
@@ -108,12 +114,14 @@ class AuthView(RetrieveModelMixin, CreateUpdateModelMixin, GenericViewSet):
     def get_instance(self):
         user_id = self.request.user['user_id']
         return models.CompanyAuth.objects.filter(company_id=user_id).first()
+
     def perform_create(self):
         user_id = self.request.user['user_id']
-        instance = serializers.save(company_id=user_id,remark="")
+        instance = serializers.save(company_id=user_id, remark="")
         instance.company.auth_type = 2
         instance.company.save()
-    def perform_update(self,serializer):
+
+    def perform_update(self, serializer):
         instance = serializers.save(remark="")
         instance.company.auth_type = 2
         instance.company.save()

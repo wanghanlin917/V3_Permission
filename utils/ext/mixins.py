@@ -1,4 +1,5 @@
 from rest_framework.response import Response
+from django.http.response import Http404
 
 
 class ListModelMixin:
@@ -32,6 +33,8 @@ class RetrieveModelMixin:
             #      "data": {"id": instance.id, "username": instance.username, "email": instance.email,
             #               "mobile": instance.mobile, "register_time": instance.ctime, "roles": ["admin"],
             #               "type": instance.auth_type}})
+        except Http404 as e:
+            return Response({"code": -1, "message": "对象不存在"})
         except Exception as e:
             print(e)
             return Response({"code": -1, "message": "jajaj"})
