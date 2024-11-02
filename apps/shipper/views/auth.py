@@ -103,7 +103,7 @@ class AuthView(RetrieveModelMixin, CreateUpdateModelMixin, GenericViewSet):
             print(res["公民身份号码"]["words"])
             return Response({"code": 0, "message": "success",
                              "data": {"url": local_url, "abs_url": abs_url, "name": res["姓名"]["words"],
-                                      "cardId": res["公民身份号码"]["words"]}})
+                                          "cardId": res["公民身份号码"]["words"]}})
         # print("type", img_type)
         print("upload_url", upload_url)
         print("local_url", local_url)
