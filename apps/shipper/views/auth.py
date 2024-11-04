@@ -115,13 +115,13 @@ class AuthView(RetrieveModelMixin, CreateUpdateModelMixin, GenericViewSet):
         user_id = self.request.user['user_id']
         return models.CompanyAuth.objects.filter(company_id=user_id).first()
 
-    def perform_create(self):
+    def perform_create(self,serializer):
         user_id = self.request.user['user_id']
-        instance = serializers.save(company_id=user_id, remark="")
+        instance = serializer.save(company_id=user_id, remark="")
         instance.company.auth_type = 2
         instance.company.save()
 
     def perform_update(self, serializer):
-        instance = serializers.save(remark="")
+        instance = serializer.save(remark="")
         instance.company.auth_type = 2
         instance.company.save()
