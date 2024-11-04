@@ -26,7 +26,7 @@ class RetrieveModelMixin:
         try:
             instance = self.get_object()
             serializer = self.get_serializer(instance)
-            # print(serializer.data)
+            print("re",serializer.data)
             return Response({"code": 0, "message": "成功", "data": serializer.data})
             # return Response(
             #     {"code": 0, "message": "成功",

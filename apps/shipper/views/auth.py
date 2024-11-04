@@ -47,7 +47,7 @@ def baidu_ai(bytes_body):
 
 
 class AuthModelSerializers(serializers.ModelSerializer):
-    # auth_type_text = serializers.CharField(source="company.auth_type_text",read_only=True)
+    auth_type = serializers.CharField(source="company.auth_type", read_only=True)
     # auth_type_class = serializers.SerializerMethodField(read_only=True)
     licence_path_url = serializers.SerializerMethodField()
     legal_identity_front_url = serializers.SerializerMethodField()
@@ -103,11 +103,11 @@ class AuthView(RetrieveModelMixin, CreateUpdateModelMixin, GenericViewSet):
             print(res["公民身份号码"]["words"])
             return Response({"code": 0, "message": "success",
                              "data": {"url": local_url, "abs_url": abs_url, "name": res["姓名"]["words"],
-                                          "cardId": res["公民身份号码"]["words"]}})
+                                      "cardId": res["公民身份号码"]["words"]}})
         # print("type", img_type)
-        print("upload_url", upload_url)
-        print("local_url", local_url)
-        print("abs_url", abs_url)
+        # print("upload_url", upload_url)
+        # print("local_url", local_url)
+        # print("abs_url", abs_url)
         return Response({"code": 0, "message": "success",
                          "data": {"url": local_url, "abs_url": abs_url}})
 
@@ -115,7 +115,7 @@ class AuthView(RetrieveModelMixin, CreateUpdateModelMixin, GenericViewSet):
         user_id = self.request.user['user_id']
         return models.CompanyAuth.objects.filter(company_id=user_id).first()
 
-    def perform_create(self,serializer):
+    def perform_create(self, serializer):
         user_id = self.request.user['user_id']
         instance = serializer.save(company_id=user_id, remark="")
         instance.company.auth_type = 2
