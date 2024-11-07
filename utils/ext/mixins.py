@@ -18,7 +18,23 @@ class ListModelMixin:
         print(serializer.data)
         return Response(
             {"code": 0, "message": "成功",
-             "data": ""})
+             "data": serializer.data})
+
+
+class ListRetrieveModelMixin:
+    def list(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance)
+            return Response(
+                {"code": 0, "message": "成功",
+                 "data": serializer.data})
+        except Http404 as e:
+            return Response({"code": -1, "message": "对象不存在"})
+        except Exception as e:
+            print(e)
+            return Response({"code": -1, "message": "钱包错误"})
+
 
 
 class RetrieveModelMixin:
@@ -26,7 +42,7 @@ class RetrieveModelMixin:
         try:
             instance = self.get_object()
             serializer = self.get_serializer(instance)
-            print("re",serializer.data)
+            print("re", serializer.data)
             return Response({"code": 0, "message": "成功", "data": serializer.data})
             # return Response(
             #     {"code": 0, "message": "成功",

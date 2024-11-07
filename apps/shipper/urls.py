@@ -1,12 +1,12 @@
 from django.urls import path, include
-from .views import acount, basic, auth
+from .views import acount, basic, auth,wallet
 
 from rest_framework import routers
 
 router = routers.SimpleRouter(trailing_slash=False)
 router.register(r'users/info', basic.UserInfoView, basename="UserInfoView")
 router.register(r'auth', auth.AuthView, basename="AuthView")
-rout
+router.register(r'wallet',wallet.WalletView)
 
 urlpatterns = [
     path('users/login', acount.LoginView.as_view(), name='LoginView'),
