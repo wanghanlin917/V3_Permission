@@ -151,3 +151,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 UPLOAD_PATH = 'upload/'
 # 访问的前缀 http://127.0.0.1:8000/media
 MEDIA_URL = '/media/'
+
+ALI_APP_PRI_KEY_PATH = os.path.join(BASE_DIR, 'files', '应用私钥.txt')
+ALI_PUB_KEY_PATH = os.path.join(BASE_DIR, 'files', '支付宝公钥.txt')
+# ALI_PRI_KEY_PATH = os.path.join(BASE_DIR, 'files', '支付宝私钥.txt')
+
+ALI_APPID = "9021000131649516"
+# ALI_GATEWAY = "https://openapi.alipaydev.com/gateway.do"
+ALI_GATEWAY = "https://openapi-sandbox.dl.alipaydev.com/gateway.do"
+
+ALI_NOTIFY_URL = "http://127.0.0.1:8000/pay/notify/"  # POST,不是公网IP所以没看到请求到来。
+ALI_RETURN_URL = "http://127.0.0.1:8000/pay/notify/"  # GET,为什么GET能访问呀？是基于js做的跳转。location.href = 地址
