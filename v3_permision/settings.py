@@ -160,5 +160,5 @@ ALI_APPID = "9021000131649516"
 # ALI_GATEWAY = "https://openapi.alipaydev.com/gateway.do"
 ALI_GATEWAY = "https://openapi-sandbox.dl.alipaydev.com/gateway.do"
 
-ALI_NOTIFY_URL = "http://127.0.0.1:8000/pay/notify/"  # POST,不是公网IP所以没看到请求到来。
-ALI_RETURN_URL = "http://127.0.0.1:8000/pay/notify/"  # GET,为什么GET能访问呀？是基于js做的跳转。location.href = 地址
+ALI_NOTIFY_URL = "http://127.0.0.1:8000/api/v1/wallet/charge/notify"  # POST,不是公网IP所以没看到请求到来。
+ALI_RETURN_URL = "http://127.0.0.1:8000/api/v1/wallet/charge/notify"  # GET,为什么GET能访问呀？是基于js做的跳转。location.href = 地址

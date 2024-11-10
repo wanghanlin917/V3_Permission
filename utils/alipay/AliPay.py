@@ -94,9 +94,11 @@ class AliPay(object):
 
     def ordered_data(self, data):
         complex_keys = []
+        print("data",data)
         for key, value in data.items():
             if isinstance(value, dict):
                 complex_keys.append(key)
+        print("complex_keys", complex_keys)
 
         # 将字典类型的数据dump出来
         for key in complex_keys:
@@ -115,10 +117,10 @@ class AliPay(object):
 
     def _verify(self, raw_content, signature):
         # 开始计算签名
-        print("signature", signature)
+        # print("signature", signature)
         key = self.alipay_public_key
         signer = PKCS1_v1_5.new(key)
-        print("signer", signer)
+        # print("signer", signer)
         digest = SHA256.new()
         digest.update(raw_content.encode("utf8"))
         if signer.verify(digest, decodebytes(signature.encode("utf8"))):
@@ -128,7 +130,9 @@ class AliPay(object):
     def verify(self, data, signature):
         if "sign_type" in data:
             sign_type = data.pop("sign_type")
+
         # 排序后的字符串
         unsigned_items = self.ordered_data(data)
+        print("unsigned_items",unsigned_items)
         message = "&".join(u"{}={}".format(k, v) for k, v in unsigned_items)
         return self._verify(message, signature)

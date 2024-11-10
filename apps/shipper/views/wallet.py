@@ -2,8 +2,9 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework import serializers
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from utils.alipay import Alipay
+from utils.alipay.AliPay import AliPay
 from utils.ext.mixins import ListRetrieveModelMixin
 from utils.ext.auth import JwtAuthentication, JwtParamAuthentication, DenyAuthentication
 from utils.encrypt import gen_random_oid
@@ -44,7 +45,7 @@ class WalletView(ListRetrieveModelMixin, GenericViewSet):
     @action(detail=False, methods=["post"], url_path="charge")
     def charge(self, request):
         # 序列化校验
-        user_id = request.data["user_id"]
+        user_id = request.user["user_id"]
         out_trade_no = gen_random_oid()
 
         # 生成交易记录
@@ -55,7 +56,7 @@ class WalletView(ListRetrieveModelMixin, GenericViewSet):
             trans_id=out_trade_no,
             pay_status=0
         )
-        ali_pay = Alipay(
+        ali_pay = AliPay(
             appid=settings.ALI_APPID,
             app_notify_url=settings.ALI_NOTIFY_URL,
             return_url=settings.ALI_RETURN_URL,
@@ -69,4 +70,25 @@ class WalletView(ListRetrieveModelMixin, GenericViewSet):
             total_amount=request.data['amount']
         )
         pay_url = "{}?{}".format(settings.ALI_GATEWAY, query_params)
-        return Response({"code": 0, 'data': pay_url})
+        return Response({"code": 0, "message": "success", "data": pay_url})
+
+
+class ChargeNotifyView(APIView):
+    authentication_classes = []
+    def get(self,request):
+        # 支付成功后页面会跳转到这里
+        ali_pay = AliPay(
+            appid=settings.ALI_APPID,
+            app_notify_url=settings.ALI_NOTIFY_URL,
+            return_url=settings.ALI_RETURN_URL,
+            app_private_key_path=settings.ALI_APP_PRI_KEY_PATH,
+            alipay_public_key_path=settings.ALI_PUB_KEY_PATH
+        )
+        # 1. 获取支付宝携带的参数
+        params = request.GET.dict()
+        sign = params.pop("sign",None)
+        # 2. 签名校验
+        print("params",params)
+        print(request.GET)
+        status = ali_pay.verify(params, sign)
+        print("status",status)

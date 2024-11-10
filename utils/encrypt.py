@@ -13,6 +13,6 @@ def md5(value):
 
 def gen_random_oid():
     rand_number = random.randint(10000000, 99999999)
-    ctime = datetime.datetime().strftime("%Y%m%d%H%M%S%f")
+    ctime = datetime.datetime.now().strftime("%Y%m%d%H%M%S%f")
     trans_id = "{}{}".format(ctime, rand_number)
     return trans_id
