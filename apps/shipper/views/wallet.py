@@ -1,3 +1,5 @@
+from django.shortcuts import HttpResponse,redirect
+
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import serializers
 from rest_framework.decorators import action
@@ -88,7 +90,18 @@ class ChargeNotifyView(APIView):
         params = request.GET.dict()
         sign = params.pop("sign",None)
         # 2. 签名校验
-        print("params",params)
-        print(request.GET)
+        # print("params",params)
+        # print(request.GET)
         status = ali_pay.verify(params, sign)
-        print("status",status)
+        # print("status",status)
+        if status:
+            # 状态
+            out_trade_no = params['out_trade_no']
+            # 订单状态修改
+            tran_object = models.TransactionRecord.objects.filter(trans_id=out_trade_no,pay_status=0).first()
+
+            # 订单状态更新
+            tran_object.pay_status = 1
+            tran_object.save()
+            return redirect("http://localhost:3333/api/v1/front/wallet?pay=success")
+
