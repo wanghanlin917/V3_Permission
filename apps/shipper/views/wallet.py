@@ -1,4 +1,5 @@
-from django.shortcuts import HttpResponse,redirect
+from django.shortcuts import HttpResponse, redirect
+from django.conf import settings
 
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import serializers
@@ -13,7 +14,8 @@ from utils.encrypt import gen_random_oid
 
 from apps.repository import models
 
-from django.conf import settings
+import requests
+from decimal import Decimal
 
 
 class WalletViewSerializers(serializers.ModelSerializer):
@@ -30,6 +32,11 @@ class WalletViewSerializers(serializers.ModelSerializer):
 
     def get_total(self, obj):
         return obj.balance + obj.freeze_balance
+
+
+class WithDrawSerializer(serializers.Serializer):
+    amount = serializers.DecimalField(required=True, max_digits=8, decimal_places=2, coerce_to_string=True)
+    ali_account = serializers.CharField(required=True)
 
 
 class WalletView(ListRetrieveModelMixin, GenericViewSet):
@@ -74,10 +81,81 @@ class WalletView(ListRetrieveModelMixin, GenericViewSet):
         pay_url = "{}?{}".format(settings.ALI_GATEWAY, query_params)
         return Response({"code": 0, "message": "success", "data": pay_url})
 
+    @action(detail=False, methods=['post'], url_path='withdraw')
+    def withdraw(self, request):
+        # 执行提现逻辑
+        # 1.获取用户提交的数据，表单的校验
+        ser = WithDrawSerializer(data=request.data)
+        if not ser.is_valid():
+            key = list(ser.errors.keys())[0]
+            return Response({"code": -1, 'message': ser.errors[key][0]})
+        amount = ser.data['amount']
+        ali_account = ser.data['ali_account']
+        # 2.可用余额 > 提现
+        user_id = request.user['user_id']
+        company_object = models.Company.objects.filter(id=user_id).first()
+        amount = Decimal(amount)
+        print("账号", ali_account)
+        if company_object.balance < amount:
+            return Response({"code": -1, "message": "余额不足"})
+        # 3.创建交易记录
+        """        
+        tran_id = gen_random_oid()
+        models.TransactionRecord.objects.create(
+            company=company_object,
+            tran_type=-1,
+            amount=amount,
+            ali_account=ali_amount,
+            trans_id=tran_id,
+            pay_status=0,
+            auditor_status=0
+        )
+        # 4.减少账户余额
+        company_object.balance -= amount
+        company_object.freeze_balance += amount
+        company_object.save()
+        """
+        tran_id = gen_random_oid()
+        models.TransactionRecord.objects.create(
+            company=company_object,
+            tran_type=-1,
+            amount=amount,
+            ali_account=ali_account,
+            trans_id=tran_id,
+            pay_status=1,
+        )
+        # 4.减少账户余额
+        company_object.balance -= amount
+        company_object.save()
+
+        # 5.实现转账
+        ali_pay = AliPay(
+            appid=settings.ALI_APPID,
+            app_notify_url=settings.ALI_NOTIFY_URL,
+            return_url=settings.ALI_RETURN_URL,
+            app_private_key_path=settings.ALI_APP_PRI_KEY_PATH,
+            alipay_public_key_path=settings.ALI_PUB_KEY_PATH
+        )
+        query_params = ali_pay.transfer(
+            out_biz_no=tran_id,
+            trans_amount=float(amount),
+            identity=ali_account,
+            order_title="支付宝提现"
+        )
+        pay_url = "{}?{}".format(settings.ALI_GATEWAY, query_params)
+        res = requests.get(pay_url)
+        data_dict = res.json()
+        print("字典", data_dict)
+        if data_dict['alipay_fund_trans_uni_transfer_response']['code'] == '10000':
+            return Response({'code': 0, "message": "提现成功"})
+        else:
+            return Response({"code": -1, "message": "提现失败"})
+
 
 class ChargeNotifyView(APIView):
     authentication_classes = []
-    def get(self,request):
+
+    def get(self, request):
         # 支付成功后页面会跳转到这里
         ali_pay = AliPay(
             appid=settings.ALI_APPID,
@@ -88,7 +166,7 @@ class ChargeNotifyView(APIView):
         )
         # 1. 获取支付宝携带的参数
         params = request.GET.dict()
-        sign = params.pop("sign",None)
+        sign = params.pop("sign", None)
         # 2. 签名校验
         # print("params",params)
         # print(request.GET)
@@ -98,10 +176,12 @@ class ChargeNotifyView(APIView):
             # 状态
             out_trade_no = params['out_trade_no']
             # 订单状态修改
-            tran_object = models.TransactionRecord.objects.filter(trans_id=out_trade_no,pay_status=0).first()
-
+            tran_object = models.TransactionRecord.objects.filter(trans_id=out_trade_no, pay_status=0).first()
             # 订单状态更新
             tran_object.pay_status = 1
             tran_object.save()
-            return redirect("http://localhost:3333/api/v1/front/wallet?pay=success")
-
+            # 更新账余额
+            tran_object.company.balance += tran_object.amount
+            tran_object.company.save()
+            return redirect("http://localhost:3333/#/users/wallet?pay=success")
+        return redirect("http://localhost:3333/#/users/wallet?pay=error")

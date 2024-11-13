@@ -48,7 +48,7 @@ class AliPay(object):
 
         return self.sign_data(data)
 
-    def transfer(self, out_biz_no, trans_amount):
+    def transfer(self, out_biz_no, trans_amount, identity, order_title):
         data = {
             "app_id": self.appid,
             "method": "alipay.fund.trans.uni.transfer",
@@ -61,12 +61,12 @@ class AliPay(object):
                 "trans_amount": trans_amount,
                 "product_code": "TRANS_ACCOUNT_NO_PWD",
                 "biz_scene": "DIRECT_TRANSFER",
-                "order_title": "武沛齐的提现",
+                "order_title": order_title,
                 "remark": "备注信息",
                 "payee_info": json.dumps({
                     "identity_type": "ALIPAY_LOGON_ID",
-                    "identity": "nbjsag5718@sandbox.com",
-                    "name": "沙箱环境"
+                    "identity": identity,
+                    "name": "gwbiqc0184"
                 }, separators=(',', ':'))
             }, separators=(',', ':'))
         }
@@ -94,7 +94,7 @@ class AliPay(object):
 
     def ordered_data(self, data):
         complex_keys = []
-        print("data",data)
+        print("data", data)
         for key, value in data.items():
             if isinstance(value, dict):
                 complex_keys.append(key)
@@ -133,6 +133,6 @@ class AliPay(object):
 
         # 排序后的字符串
         unsigned_items = self.ordered_data(data)
-        print("unsigned_items",unsigned_items)
+        print("unsigned_items", unsigned_items)
         message = "&".join(u"{}={}".format(k, v) for k, v in unsigned_items)
         return self._verify(message, signature)
