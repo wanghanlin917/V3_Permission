@@ -11,6 +11,7 @@ from utils.alipay.AliPay import AliPay
 from utils.ext.mixins import ListRetrieveModelMixin
 from utils.ext.auth import JwtAuthentication, JwtParamAuthentication, DenyAuthentication
 from utils.encrypt import gen_random_oid
+from urllib.parse import parse_qs
 
 from apps.repository import models
 
@@ -48,7 +49,7 @@ class WalletView(ListRetrieveModelMixin, GenericViewSet):
         queryset = self.filter_queryset(self.get_queryset())
         # print(self.request.user)
         user_id = self.request.user["user_id"]
-        print(user_id)
+        print("xxxxx",user_id)
         return queryset.filter(id=user_id).first()
 
     @action(detail=False, methods=["post"], url_path="charge")
@@ -147,7 +148,7 @@ class WalletView(ListRetrieveModelMixin, GenericViewSet):
         data_dict = res.json()
         print("字典", data_dict)
         if data_dict['alipay_fund_trans_uni_transfer_response']['code'] == '10000':
-            return Response({'code': 0, "message": "提现成功"})
+            return Response({'code': 0, "message": "提现成功","data":"sdddd"})
         else:
             return Response({"code": -1, "message": "提现失败"})
 
@@ -185,3 +186,26 @@ class ChargeNotifyView(APIView):
             tran_object.company.save()
             return redirect("http://localhost:3333/#/users/wallet?pay=success")
         return redirect("http://localhost:3333/#/users/wallet?pay=error")
+
+    def post(self, request):
+        # 异步通知
+        ali_pay = AliPay(
+            appid=settings.ALI_APPID,
+            app_notify_url=settings.ALI_NOTIFY_URL,
+            return_url=settings.ALI_RETURN_URL,
+            app_private_key_path=settings.ALI_APP_PRI_KEY_PATH,
+            alipay_public_key_path=settings.ALI_PUB_KEY_PATH
+        )
+        # 1. 获取支付宝携带的参数
+        body_str = request.body.decode('utf-8')
+        post_data = parse_qs(body_str)
+        post_dict = {}
+        for k,v in post_data.items():
+            post_dict[k] = v[0]
+        sign = post_dict.pop("sign",None)
+        status = ali_pay.verify(post_dict, sign)
+        if status:
+            out_trade_no = post_dict["out_trade_no"]
+            # 3.状态=待支付=>已支付
+            return HttpResponse('success')
+        return HttpResponse('error')
