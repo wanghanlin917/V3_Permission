@@ -7,6 +7,7 @@ router = routers.SimpleRouter(trailing_slash=False)
 router.register(r'users/info', basic.UserInfoView, basename="UserInfoView")
 router.register(r'auth', auth.AuthView, basename="AuthView")
 router.register(r'wallet', wallet.WalletView)
+# router.register(r'wallet/tran', wallet.TranView)
 
 urlpatterns = [
     path('users/login', acount.LoginView.as_view(), name='LoginView'),

@@ -1,5 +1,10 @@
 from rest_framework.filters import BaseFilterBackend
 
+class MineBaseFilter(BaseFilterBackend):
+    MINE_FILED = "id"
+    def filter_queryset(self, request, queryset, view):
+        
+
 
 class MineFilterBackend(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):

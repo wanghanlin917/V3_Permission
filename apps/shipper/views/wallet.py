@@ -49,7 +49,6 @@ class WalletView(ListRetrieveModelMixin, GenericViewSet):
         queryset = self.filter_queryset(self.get_queryset())
         # print(self.request.user)
         user_id = self.request.user["user_id"]
-        print("xxxxx",user_id)
         return queryset.filter(id=user_id).first()
 
     @action(detail=False, methods=["post"], url_path="charge")
@@ -209,3 +208,6 @@ class ChargeNotifyView(APIView):
             # 3.状态=待支付=>已支付
             return HttpResponse('success')
         return HttpResponse('error')
+
+# class TranView(GenericViewSet):
+#     pass
