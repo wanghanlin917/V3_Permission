@@ -36,7 +36,6 @@ class ListRetrieveModelMixin:
             return Response({"code": -1, "message": "钱包错误"})
 
 
-
 class RetrieveModelMixin:
     def retrieve(self, request, *args, **kwargs):
         try:
@@ -111,3 +110,19 @@ class CreateUpdateModelMixin:
 
         def perform_update(self, serializer):
             serializer.save()
+
+
+class ListPageNumberModelMixin:
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return Response({
+                "code": 0,
+                "data": {"total": queryset.count()}
+            })
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)

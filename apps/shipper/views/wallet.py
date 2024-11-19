@@ -151,7 +151,6 @@ class WalletView(ListRetrieveModelMixin, GenericViewSet):
         else:
             return Response({"code": -1, "message": "提现失败"})
 
-
 class ChargeNotifyView(APIView):
     authentication_classes = []
 
@@ -209,5 +208,7 @@ class ChargeNotifyView(APIView):
             return HttpResponse('success')
         return HttpResponse('error')
 
-# class TranView(GenericViewSet):
-#     pass
+from rest_framework.mixins import ListModelMixin,RetrieveModelMixin
+from rest_framework.viewsets import ModelViewSet
+class TranView(GenericViewSet):
+    pass
