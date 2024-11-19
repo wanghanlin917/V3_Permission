@@ -121,8 +121,11 @@ class ListPageNumberModelMixin:
             serializer = self.get_serializer(page, many=True)
             return Response({
                 "code": 0,
-                "data": {"total": queryset.count()}
+                "data": {"total": queryset.count(), 'page_size': self.paginator.page_size, "data": serializer.data}
             })
 
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response({
+            "code": 0,
+            "data": serializer.data
+        })

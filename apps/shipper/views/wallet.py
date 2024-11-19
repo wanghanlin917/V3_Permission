@@ -147,9 +147,10 @@ class WalletView(ListRetrieveModelMixin, GenericViewSet):
         data_dict = res.json()
         print("字典", data_dict)
         if data_dict['alipay_fund_trans_uni_transfer_response']['code'] == '10000':
-            return Response({'code': 0, "message": "提现成功","data":"sdddd"})
+            return Response({'code': 0, "message": "提现成功", "data": "sdddd"})
         else:
             return Response({"code": -1, "message": "提现失败"})
+
 
 class ChargeNotifyView(APIView):
     authentication_classes = []
@@ -198,9 +199,9 @@ class ChargeNotifyView(APIView):
         body_str = request.body.decode('utf-8')
         post_data = parse_qs(body_str)
         post_dict = {}
-        for k,v in post_data.items():
+        for k, v in post_data.items():
             post_dict[k] = v[0]
-        sign = post_dict.pop("sign",None)
+        sign = post_dict.pop("sign", None)
         status = ali_pay.verify(post_dict, sign)
         if status:
             out_trade_no = post_dict["out_trade_no"]
@@ -208,7 +209,12 @@ class ChargeNotifyView(APIView):
             return HttpResponse('success')
         return HttpResponse('error')
 
-from rest_framework.mixins import ListModelMixin,RetrieveModelMixin
-from rest_framework.viewsets import ModelViewSet
-class TranView(GenericViewSet):
+
+# from rest_framework.mixins import ListModelMixin,RetrieveModelMixin
+# from rest_framework.viewsets import ModelViewSet
+
+from utils.ext.mixins import ListPageNumberModelMixin
+
+
+class TranView(ListPageNumberModelMixin, GenericViewSet):
     pass
