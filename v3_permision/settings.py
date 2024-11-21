@@ -142,7 +142,7 @@ CACHES = {
 REST_FRAMEWORK = {
     "UNAUTHENTICATED_USER": None,
     "UNAUTHENTICATED_TOKEN": None,
-    "PAGE_SIZE": 2,
+    "PAGE_SIZE": 5,
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination"
 }
 

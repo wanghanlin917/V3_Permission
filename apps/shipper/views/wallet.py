@@ -227,14 +227,17 @@ class TranSearchFilter(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         tran_type = request.query_params.get('tran_type')
         if tran_type:
-            queryset = queryset.filter(tran_type=tran_type)
+            if tran_type == "0":
+                queryset = queryset.filter()
+            else:
+                queryset = queryset.filter(tran_type=tran_type)
         trans_id = request.query_params.get('trans_id')
         if trans_id:
-            queryset = queryset.filter(trans_id=trans_id)
+            queryset = queryset.filter(trans_id__contains=trans_id)
         date_range = request.query_params.get('date_range')
         date_range_end = request.query_params.get('date_range_end')
         if date_range and date_range_end:
-            queryset = queryset.filter(created_datetime__gte=date_range, created_datetime__lte=date_range_end)
+            queryset = queryset.filter(create_datetime__gte=date_range, create_datetime__lte=date_range_end)
 
         return queryset
 
