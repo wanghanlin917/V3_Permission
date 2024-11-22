@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import acount, basic, auth, wallet
+from .views import acount, basic, auth, wallet, address
 
 from rest_framework import routers
 
@@ -8,7 +8,7 @@ router.register(r'users/info', basic.UserInfoView, basename="UserInfoView")
 router.register(r'auth', auth.AuthView, basename="AuthView")
 router.register(r'wallet', wallet.WalletView)
 router.register(r'wallet/tran', wallet.TranView)
-
+router.register(r'address', address.AddressView)
 urlpatterns = [
     path('users/login', acount.LoginView.as_view(), name='LoginView'),
     path('users/sms', acount.SendSmsView.as_view(), name='SendSmsView'),
