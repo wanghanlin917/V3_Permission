@@ -125,7 +125,6 @@ class ListPageNumberModelMixin:
             })
 
         serializer = self.get_serializer(queryset, many=True)
-        print("222222")
         return Response({
             "code": 0,
             "data": serializer.data
