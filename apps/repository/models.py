@@ -33,8 +33,9 @@ class CompanyAuth(models.Model):
 class TransactionRecord(models.Model):
     """交易记录"""
     company = models.ForeignKey(verbose_name="供应商", to="Company", on_delete=models.CASCADE)
-    tran_type_choices = ((-1, "提现"), (1, "充值"))
+    tran_type_choices = ((-1, "提现"), (1, "充值"), (2, "下单"), (3, "取消"))
     tran_type = models.SmallIntegerField(choices=tran_type_choices, verbose_name="转账类型")
+    order_id = models.CharField(verbose_name="运单号", max_length=64, null=True, blank=True, db_index=True)
     amount = models.DecimalField(verbose_name="金额", default=0, max_digits=10, decimal_places=2)
     ali_account = models.CharField(verbose_name="提现支付宝", max_length=64, null=True, blank=True)
     trans_id = models.CharField(verbose_name="订单号", max_length=64, db_index=True)
@@ -67,10 +68,12 @@ class Address(models.Model):
     mobile = models.CharField(verbose_name="手机号", max_length=32)
     company = models.ForeignKey(verbose_name="供应商", to="Company", on_delete=models.CASCADE)
 
+
 class Order(models.Model):
     """运单"""
     # 默认
-    status_choices = ((0, "已发布"), (1, "待接单"), (2, "待提货"), (3, "运输中"), (4, "待结算"), (5, "已结算"), (10, "已取消"),)
+    status_choices = (
+        (0, "已发布"), (1, "待接单"), (2, "待提货"), (3, "运输中"), (4, "待结算"), (5, "已结算"), (10, "已取消"),)
     status = models.SmallIntegerField(verbose_name="状态", choices=status_choices, default=1)
 
     goods_type_choices = ((1, "电子产品"), (2, "大宗货物"), (3, "冷藏货物"), (4, "农产品"), (5, "其他"))
@@ -104,6 +107,8 @@ class Order(models.Model):
     company = models.ForeignKey(verbose_name="供应商", to="Company", on_delete=models.CASCADE)
 
     driver = models.ForeignKey(verbose_name="接单司机", to="Driver", on_delete=models.CASCADE, null=True, blank=True)
+
+
 class OrderRecord(models.Model):
     """ 订单运输记录 """
     order = models.ForeignKey(verbose_name="订单", to="Order", on_delete=models.CASCADE)
@@ -123,7 +128,8 @@ class Driver(models.Model):
         2: "primary",
         3: "success",
     }
-    auth_type = models.SmallIntegerField(verbose_name="认证类型", choices=((1, "未认证"), (2, "认证中"), (3, "已认证")), default=1)
+    auth_type = models.SmallIntegerField(verbose_name="认证类型", choices=((1, "未认证"), (2, "认证中"), (3, "已认证")),
+                                         default=1)
 
     # 可用
     balance = models.DecimalField(verbose_name="账户余额", default=0, max_digits=10, decimal_places=2)

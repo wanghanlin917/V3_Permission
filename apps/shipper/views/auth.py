@@ -89,7 +89,7 @@ class AuthView(RetrieveModelMixin, CreateUpdateModelMixin, GenericViewSet):
         if upload_object.size > 10 * 1024 * 1024:
             return Response({
                 "code": -1,
-                "msg": "文件太大"
+                "message": "文件太大"
             })
         upload_url = get_upload_filename(upload_object.name)
         save_path = default_storage.save(upload_url, upload_object)

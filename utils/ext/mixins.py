@@ -129,3 +129,19 @@ class ListPageNumberModelMixin:
             "code": 0,
             "data": serializer.data
         })
+
+
+class CreateModelMixin:
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        print(serializer.initial_data)
+        # serializer.is_valid(raise_exception=True)
+        print("验证", serializer.is_valid())
+        if not serializer.is_valid():
+            print(serializer.errors)
+            return Response({"code": -1, "message": serializer.errors})
+        res = self.perform_create(serializer)
+        return res or Response({"code": 0, "message": "发布成功", "data": serializer.data})
+
+    def perform_create(self, serializer):
+        serializer.save()
