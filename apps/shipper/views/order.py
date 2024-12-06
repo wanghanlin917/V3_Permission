@@ -21,7 +21,7 @@ class OrderModelSerializer(serializers.ModelSerializer):
         model = models.Order
         # fields = '__all__'
         exclude = ["company", "driver"]
-         
+
         extra_kwargs = {
             "unit_price": {"coerce_to_string": False},
             "weight": {"coerce_to_string": False},
