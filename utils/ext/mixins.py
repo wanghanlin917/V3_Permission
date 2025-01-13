@@ -115,8 +115,11 @@ class CreateUpdateModelMixin:
 class ListPageNumberModelMixin:
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
+        print(type(queryset))
 
         page = self.paginate_queryset(queryset)
+        # print(page)
+        # print(type(page))
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             return Response({

@@ -241,8 +241,10 @@ class TranSearchFilter(BaseFilterBackend):
 
         return queryset
 
+
 class TranModeSerializer(serializers.ModelSerializer):
     create_datetime = serializers.DateTimeField(format="%Y-%m-%d")
+
     class Meta:
         model = models.TransactionRecord
         fields = '__all__'
@@ -254,7 +256,3 @@ class TranView(ListPageNumberModelMixin, GenericViewSet):
     queryset = models.TransactionRecord.objects.all().order_by('-id')
     serializer_class = TranModeSerializer
     pagination_class = PageNumberPagination
-
-
-
-
