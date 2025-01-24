@@ -24,3 +24,8 @@ class AddressView(ListPageNumberModelMixin, GenericViewSet):
     pagination_class = AddressPageNumberPagination
     serializer_class = AddressModelSerializer
     queryset = models.Address.objects.all().order_by('-id')
+
+    def xxx(self):
+        self.dispatch
+
+
